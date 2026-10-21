@@ -1,0 +1,149 @@
+package ar.edu.utn.ms2.servicio;
+
+import ar.edu.utn.ms2.datos.RepositorioSolicitudesMemoria;
+import ar.edu.utn.ms2.modelo.Estudiante;
+import ar.edu.utn.ms2.modelo.Responsable;
+import ar.edu.utn.ms2.modelo.Solicitud;
+import java.util.ArrayList;
+import java.util.List;
+
+/** Primera implementación funcional. Es una base de trabajo para evolución del diseño. */
+public class GestorSolicitudes {
+    private final RepositorioSolicitudesMemoria repositorio = new RepositorioSolicitudesMemoria();
+    private int proximoId = 1;
+
+    public Solicitud registrar(int estudianteId, String nombreEstudiante, String emailEstudiante,
+                              String titulo, String descripcion, String tipo,
+                              String prioridad, String area) {
+        if (nombreEstudiante == null || nombreEstudiante.trim().isEmpty()) {
+            throw new IllegalArgumentException("Nombre requerido");
+        }
+        if (emailEstudiante == null || !emailEstudiante.contains("@")) {
+            throw new IllegalArgumentException("Email inválido");
+        }
+        if (titulo == null || titulo.trim().isEmpty()) {
+            throw new IllegalArgumentException("Título requerido");
+        }
+        if (descripcion == null || descripcion.trim().isEmpty()) {
+            throw new IllegalArgumentException("Descripción requerida");
+        }
+        if (tipo == null || tipo.trim().isEmpty()) {
+            throw new IllegalArgumentException("Tipo requerido");
+        }
+        if (area == null || area.trim().isEmpty()) {
+            throw new IllegalArgumentException("Área requerida");
+        }
+
+        String prioridadFinal = prioridad;
+        if (prioridadFinal == null || prioridadFinal.isBlank()) {
+            if (tipo.equalsIgnoreCase("CERTIFICADO")) {
+                prioridadFinal = "BAJA";
+            } else if (tipo.equalsIgnoreCase("RECLAMO")) {
+                prioridadFinal = "ALTA";
+            } else {
+                prioridadFinal = "MEDIA";
+            }
+        }
+        // Se conserva el dato de área como parte de la descripción operativa.
+        String descripcionCompleta = descripcion.trim() + " [Área: " + area.trim() + "]";
+        Estudiante estudiante = new Estudiante(estudianteId, nombreEstudiante.trim(), emailEstudiante.trim());
+        Solicitud solicitud = new Solicitud(proximoId++, estudiante, titulo.trim(),
+                descripcionCompleta, tipo.trim().toUpperCase(), prioridadFinal.trim().toUpperCase());
+        repositorio.guardar(solicitud);
+        return solicitud;
+    }
+
+    public void asignarResponsable(int solicitudId, int responsableId, String nombreResponsable,
+                                   String areaResponsable, String emailResponsable) {
+        Solicitud solicitud = repositorio.obtenerPorId(solicitudId);
+        if (solicitud == null) {
+            throw new IllegalArgumentException("No existe la solicitud");
+        }
+        if (nombreResponsable == null || nombreResponsable.trim().isEmpty()) {
+            throw new IllegalArgumentException("Nombre requerido");
+        }
+        if (emailResponsable == null || !emailResponsable.contains("@")) {
+            throw new IllegalArgumentException("Email inválido");
+        }
+        if (areaResponsable == null || areaResponsable.isBlank()) {
+            throw new IllegalArgumentException("Área requerida");
+        }
+        Responsable responsable = new Responsable(responsableId, nombreResponsable.trim(),
+                areaResponsable.trim(), emailResponsable.trim());
+        solicitud.setResponsable(responsable);
+    }
+
+    public void cambiarEstado(int solicitudId, String nuevoEstado) {
+        Solicitud solicitud = repositorio.obtenerPorId(solicitudId);
+        if (solicitud == null) {
+            throw new IllegalArgumentException("No existe la solicitud");
+        }
+        if (nuevoEstado == null || nuevoEstado.isBlank()) {
+            throw new IllegalArgumentException("Estado requerido");
+        }
+        String estado = nuevoEstado.trim().toUpperCase();
+        if (!estado.equals("PENDIENTE") && !estado.equals("EN_PROCESO") && !estado.equals("RESUELTA")) {
+            throw new IllegalArgumentException("Estado inválido");
+        }
+        solicitud.setEstado(estado);
+    }
+
+    public void cambiarTitulo(int solicitudId, String nuevoTitulo) {
+        Solicitud solicitud = repositorio.obtenerPorId(solicitudId);
+        if (solicitud == null) {
+            throw new IllegalArgumentException("No existe la solicitud");
+        }
+        if (nuevoTitulo == null || nuevoTitulo.trim().isEmpty()) {
+            throw new IllegalArgumentException("Título requerido");
+        }
+        solicitud.setTitulo(nuevoTitulo.trim());
+    }
+
+    public List<Solicitud> buscar(String estado, String prioridad) {
+        List<Solicitud> resultado = new ArrayList<>();
+        for (Solicitud solicitud : repositorio.obtenerTodas()) {
+            if ((estado == null || solicitud.getEstado().equalsIgnoreCase(estado))
+                    && (prioridad == null || solicitud.getPrioridad().equalsIgnoreCase(prioridad))) {
+                resultado.add(solicitud);
+            }
+        }
+        return resultado;
+    }
+
+    public String generarReporte() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("REPORTE DE SOLICITUDES\n");
+        int pendientes = 0;
+        int enProceso = 0;
+        int resueltas = 0;
+        for (Solicitud solicitud : repositorio.obtenerTodas()) {
+            if (solicitud.getEstado().equals("PENDIENTE")) pendientes++;
+            if (solicitud.getEstado().equals("EN_PROCESO")) enProceso++;
+            if (solicitud.getEstado().equals("RESUELTA")) resueltas++;
+            sb.append("#").append(solicitud.getId()).append(" | ")
+                    .append(solicitud.getTitulo()).append(" | ")
+                    .append(solicitud.getTipo()).append(" | ")
+                    .append(solicitud.getPrioridad()).append(" | ")
+                    .append(solicitud.getEstado()).append(" | ")
+                    .append(solicitud.getEstudiante().getNombre()).append(" | ");
+            Responsable responsable = solicitud.getResponsable();
+            if (responsable == null) {
+                sb.append("Sin asignar");
+            } else {
+                sb.append(responsable.getNombre()).append(" (")
+                        .append(responsable.getArea()).append(", ")
+                        .append(responsable.getEmail()).append(")");
+            }
+            sb.append("\n");
+        }
+        sb.append("TOTAL: ").append(repositorio.obtenerTodas().size())
+                .append(" | PENDIENTES: ").append(pendientes)
+                .append(" | EN PROCESO: ").append(enProceso)
+                .append(" | RESUELTAS: ").append(resueltas);
+        return sb.toString();
+    }
+
+    public Solicitud consultarPorId(int id) {
+        return repositorio.obtenerPorId(id);
+    }
+}
