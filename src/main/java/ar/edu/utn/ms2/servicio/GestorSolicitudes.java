@@ -13,8 +13,23 @@ public class GestorSolicitudes {
     private int proximoId = 1;
 
     public Solicitud registrar(int estudianteId, String nombreEstudiante, String emailEstudiante,
-                              String titulo, String descripcion, String tipo,
-                              String prioridad, String area) {
+                               String titulo, String descripcion, String tipo,
+                               String prioridad, String area) {
+        validarDatosRegistro(nombreEstudiante, emailEstudiante, titulo, descripcion, tipo, area);
+
+        String prioridadFinal = determinarPrioridad(tipo, prioridad);
+
+        // Se conserva el dato de área como parte de la descripción operativa.
+        String descripcionCompleta = descripcion.trim() + " [Área: " + area.trim() + "]";
+        Estudiante estudiante = new Estudiante(estudianteId, nombreEstudiante.trim(), emailEstudiante.trim());
+        Solicitud solicitud = new Solicitud(proximoId++, estudiante, titulo.trim(),
+                descripcionCompleta, tipo.trim().toUpperCase(), prioridadFinal.trim().toUpperCase());
+        repositorio.guardar(solicitud);
+        return solicitud;
+    }
+
+    private void validarDatosRegistro(String nombreEstudiante, String emailEstudiante,
+                                      String titulo, String descripcion, String tipo, String area) {
         if (nombreEstudiante == null || nombreEstudiante.trim().isEmpty()) {
             throw new IllegalArgumentException("Nombre requerido");
         }
@@ -33,7 +48,9 @@ public class GestorSolicitudes {
         if (area == null || area.trim().isEmpty()) {
             throw new IllegalArgumentException("Área requerida");
         }
+    }
 
+    private String determinarPrioridad(String tipo, String prioridad) {
         String prioridadFinal = prioridad;
         if (prioridadFinal == null || prioridadFinal.isBlank()) {
             if (tipo.equalsIgnoreCase("CERTIFICADO")) {
@@ -44,13 +61,7 @@ public class GestorSolicitudes {
                 prioridadFinal = "MEDIA";
             }
         }
-        // Se conserva el dato de área como parte de la descripción operativa.
-        String descripcionCompleta = descripcion.trim() + " [Área: " + area.trim() + "]";
-        Estudiante estudiante = new Estudiante(estudianteId, nombreEstudiante.trim(), emailEstudiante.trim());
-        Solicitud solicitud = new Solicitud(proximoId++, estudiante, titulo.trim(),
-                descripcionCompleta, tipo.trim().toUpperCase(), prioridadFinal.trim().toUpperCase());
-        repositorio.guardar(solicitud);
-        return solicitud;
+        return prioridadFinal;
     }
 
     public void asignarResponsable(int solicitudId, int responsableId, String nombreResponsable,
