@@ -2,6 +2,7 @@ package ar.edu.utn.ms2;
 
 import ar.edu.utn.ms2.modelo.Solicitud;
 import ar.edu.utn.ms2.servicio.GestorSolicitudes;
+import ar.edu.utn.ms2.servicio.DatosRegistroSolicitud;
 
 /** Pruebas sin dependencias externas para capturar el comportamiento inicial. */
 public class PruebasCaracterizacion {
@@ -69,7 +70,7 @@ public class PruebasCaracterizacion {
         GestorSolicitudes gestor = new GestorSolicitudes();
         boolean fallo = false;
         try {
-            gestor.registrar(1, "Ana", "correo-invalido", "Consulta", "Detalle", "CONSULTA", "", "Alumnos");
+            gestor.registrar(new DatosRegistroSolicitud(1, "Ana", "correo-invalido", "Consulta", "Detalle", "CONSULTA", "", "Alumnos"));
         } catch (IllegalArgumentException e) {
             fallo = true;
         }
@@ -78,8 +79,8 @@ public class PruebasCaracterizacion {
     }
 
     private static Solicitud crear(GestorSolicitudes gestor, String tipo, String prioridad) {
-        return gestor.registrar(1, "Ana", "ana@example.com", "Consulta de legajo", "Solicito estado del trámite",
-                tipo, prioridad, "Alumnos");
+        return gestor.registrar(new DatosRegistroSolicitud(1, "Ana", "ana@example.com", "Consulta de legajo", "Solicito estado del trámite",
+                tipo, prioridad, "Alumnos"));
     }
 
     private static void verificar(boolean condicion, String mensaje) {

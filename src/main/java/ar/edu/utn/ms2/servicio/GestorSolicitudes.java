@@ -12,18 +12,18 @@ public class GestorSolicitudes {
     private final RepositorioSolicitudesMemoria repositorio = new RepositorioSolicitudesMemoria();
     private int proximoId = 1;
 
-    public Solicitud registrar(int estudianteId, String nombreEstudiante, String emailEstudiante,
-                               String titulo, String descripcion, String tipo,
-                               String prioridad, String area) {
-        validarDatosRegistro(nombreEstudiante, emailEstudiante, titulo, descripcion, tipo, area);
+    public Solicitud registrar(DatosRegistroSolicitud datos) {
+        validarDatosRegistro(datos.nombreEstudiante(), datos.emailEstudiante(),
+                datos.titulo(), datos.descripcion(), datos.tipo(), datos.area());
 
-        String prioridadFinal = determinarPrioridad(tipo, prioridad);
+        String prioridadFinal = determinarPrioridad(datos.tipo(), datos.prioridad());
 
         // Se conserva el dato de área como parte de la descripción operativa.
-        String descripcionCompleta = descripcion.trim() + " [Área: " + area.trim() + "]";
-        Estudiante estudiante = new Estudiante(estudianteId, nombreEstudiante.trim(), emailEstudiante.trim());
-        Solicitud solicitud = new Solicitud(proximoId++, estudiante, titulo.trim(),
-                descripcionCompleta, tipo.trim().toUpperCase(), prioridadFinal.trim().toUpperCase());
+        String descripcionCompleta = datos.descripcion().trim() + " [Área: " + datos.area().trim() + "]";
+        Estudiante estudiante = new Estudiante(datos.estudianteId(),
+                datos.nombreEstudiante().trim(), datos.emailEstudiante().trim());
+        Solicitud solicitud = new Solicitud(proximoId++, estudiante, datos.titulo().trim(),
+                descripcionCompleta, datos.tipo().trim().toUpperCase(), prioridadFinal.trim().toUpperCase());
         repositorio.guardar(solicitud);
         return solicitud;
     }
