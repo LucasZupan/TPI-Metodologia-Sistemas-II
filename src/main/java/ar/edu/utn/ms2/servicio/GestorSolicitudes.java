@@ -30,12 +30,9 @@ public class GestorSolicitudes {
 
     private void validarDatosRegistro(String nombreEstudiante, String emailEstudiante,
                                       String titulo, String descripcion, String tipo, String area) {
-        if (nombreEstudiante == null || nombreEstudiante.trim().isEmpty()) {
-            throw new IllegalArgumentException("Nombre requerido");
-        }
-        if (emailEstudiante == null || !emailEstudiante.contains("@")) {
-            throw new IllegalArgumentException("Email inválido");
-        }
+        validarNombre(nombreEstudiante);
+        validarEmail(emailEstudiante);
+
         if (titulo == null || titulo.trim().isEmpty()) {
             throw new IllegalArgumentException("Título requerido");
         }
@@ -47,6 +44,18 @@ public class GestorSolicitudes {
         }
         if (area == null || area.trim().isEmpty()) {
             throw new IllegalArgumentException("Área requerida");
+        }
+    }
+
+    private void validarNombre(String nombre) {
+        if (nombre == null || nombre.trim().isEmpty()) {
+            throw new IllegalArgumentException("Nombre requerido");
+        }
+    }
+
+    private void validarEmail(String email) {
+        if (email == null || !email.contains("@")) {
+            throw new IllegalArgumentException("Email inválido");
         }
     }
 
@@ -70,12 +79,8 @@ public class GestorSolicitudes {
         if (solicitud == null) {
             throw new IllegalArgumentException("No existe la solicitud");
         }
-        if (nombreResponsable == null || nombreResponsable.trim().isEmpty()) {
-            throw new IllegalArgumentException("Nombre requerido");
-        }
-        if (emailResponsable == null || !emailResponsable.contains("@")) {
-            throw new IllegalArgumentException("Email inválido");
-        }
+        validarNombre(nombreResponsable);
+        validarEmail(emailResponsable);
         if (areaResponsable == null || areaResponsable.isBlank()) {
             throw new IllegalArgumentException("Área requerida");
         }
