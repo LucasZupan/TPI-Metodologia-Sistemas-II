@@ -1,5 +1,7 @@
 package ar.edu.utn.ms2.servicio;
 
+import ar.edu.utn.ms2.modelo.TipoSolicitud;
+import ar.edu.utn.ms2.modelo.PrioridadSolicitud;
 import ar.edu.utn.ms2.datos.RepositorioSolicitudesMemoria;
 import ar.edu.utn.ms2.datos.RepositorioSolicitudes;
 import ar.edu.utn.ms2.modelo.Estudiante;
@@ -24,6 +26,9 @@ public class GestorSolicitudes {
     public Solicitud registrar(DatosRegistroSolicitud datos) {
         validarDatosRegistro(datos.nombreEstudiante(), datos.emailEstudiante(),
                 datos.titulo(), datos.descripcion(), datos.tipo(), datos.area());
+
+        validarTipo(datos.tipo());
+        validarPrioridad(datos.prioridad());
 
         String prioridadFinal = determinarPrioridad(datos.tipo(), datos.prioridad());
 
@@ -65,6 +70,25 @@ public class GestorSolicitudes {
     private void validarEmail(String email) {
         if (email == null || !email.contains("@")) {
             throw new IllegalArgumentException("Email inválido");
+        }
+    }
+
+    private void validarTipo(String tipo) {
+        try {
+            TipoSolicitud.valueOf(tipo.trim().toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Tipo inválido", e);
+        }
+    }
+
+    private void validarPrioridad(String prioridad) {
+        if (prioridad == null || prioridad.isBlank()) {
+            return;
+        }
+        try {
+            PrioridadSolicitud.valueOf(prioridad.trim().toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Prioridad inválida", e);
         }
     }
 
