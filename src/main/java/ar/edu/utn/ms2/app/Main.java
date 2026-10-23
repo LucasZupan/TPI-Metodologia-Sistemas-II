@@ -26,6 +26,9 @@ public class Main {
         gestor.cambiarEstado(segunda.getId(), EstadoSolicitud.EN_PROCESO.name());
         gestor.cambiarEstado(primera.getId(), EstadoSolicitud.RESUELTA.name());
 
+        System.out.println("=== SISTEMA DE SOLICITUDES ACADEMICAS ===");
+        System.out.println("=== VERIFICACION POST-REFACTORING ===");
+        System.out.println();
         System.out.println(gestor.generarReporte());
         System.out.println("BÚSQUEDA EN_PROCESO: " + gestor.buscar(EstadoSolicitud.EN_PROCESO.name(), null).size());
         System.out.println("BÚSQUEDA MEDIA: " + gestor.buscar(null, PrioridadSolicitud.MEDIA.name()).size());
