@@ -1,6 +1,7 @@
 package ar.edu.utn.ms2.servicio;
 
 import ar.edu.utn.ms2.datos.RepositorioSolicitudesMemoria;
+import ar.edu.utn.ms2.datos.RepositorioSolicitudes;
 import ar.edu.utn.ms2.modelo.Estudiante;
 import ar.edu.utn.ms2.modelo.Responsable;
 import ar.edu.utn.ms2.modelo.Solicitud;
@@ -9,8 +10,16 @@ import java.util.List;
 
 /** Primera implementación funcional. Es una base de trabajo para evolución del diseño. */
 public class GestorSolicitudes {
-    private final RepositorioSolicitudesMemoria repositorio = new RepositorioSolicitudesMemoria();
+    private final RepositorioSolicitudes repositorio;
     private int proximoId = 1;
+
+    public GestorSolicitudes() {
+        this(new RepositorioSolicitudesMemoria());
+    }
+
+    public GestorSolicitudes(RepositorioSolicitudes repositorio) {
+        this.repositorio = repositorio;
+    }
 
     public Solicitud registrar(DatosRegistroSolicitud datos) {
         validarDatosRegistro(datos.nombreEstudiante(), datos.emailEstudiante(),

@@ -4,7 +4,7 @@ import ar.edu.utn.ms2.modelo.Solicitud;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RepositorioSolicitudesMemoria {
+public class RepositorioSolicitudesMemoria implements RepositorioSolicitudes{
     private final List<Solicitud> solicitudes = new ArrayList<>();
 
     public void guardar(Solicitud solicitud) {
