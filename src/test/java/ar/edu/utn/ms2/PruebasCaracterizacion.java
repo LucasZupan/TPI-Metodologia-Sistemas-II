@@ -21,6 +21,8 @@ public class PruebasCaracterizacion {
         validaciones();
         validarTipoInvalido();
         validarPrioridadInvalida();
+        validarRepositorioNulo();
+        validarPrioridadConEspaciosEnTipo();
         System.out.println("OK: " + cantidad + " pruebas de caracterización superadas.");
     }
 
@@ -111,6 +113,30 @@ public class PruebasCaracterizacion {
         verificar(fallo, "Validación de prioridad inválida");
         cantidad++;
     }
+
+    private static void validarRepositorioNulo() {
+        boolean fallo = false;
+        try {
+            new GestorSolicitudes(null);
+        } catch (NullPointerException e) {
+            fallo = "Repositorio requerido".equals(e.getMessage());
+        }
+        verificar(fallo, "Validación de repositorio nulo");
+        cantidad++;
+    }
+
+    private static void validarPrioridadConEspaciosEnTipo() {
+        GestorSolicitudes gestor = new GestorSolicitudes();
+        Solicitud s = gestor.registrar(new DatosRegistroSolicitud(
+                1, "Ana", "ana@example.com",
+                "Reclamo de inscripción", "Detalle",
+                " RECLAMO ", "", "Alumnos"
+        ));
+        verificar(PrioridadSolicitud.ALTA.name().equals(s.getPrioridad()),
+                "Prioridad de tipo con espacios");
+        cantidad++;
+    }
+
 
     private static Solicitud crear(GestorSolicitudes gestor, TipoSolicitud tipo, PrioridadSolicitud prioridad) {
         return gestor.registrar(new DatosRegistroSolicitud(1, "Ana", "ana@example.com",

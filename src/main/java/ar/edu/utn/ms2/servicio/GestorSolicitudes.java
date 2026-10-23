@@ -9,6 +9,7 @@ import ar.edu.utn.ms2.modelo.Responsable;
 import ar.edu.utn.ms2.modelo.Solicitud;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /** Primera implementación funcional. Es una base de trabajo para evolución del diseño. */
 public class GestorSolicitudes {
@@ -20,7 +21,7 @@ public class GestorSolicitudes {
     }
 
     public GestorSolicitudes(RepositorioSolicitudes repositorio) {
-        this.repositorio = repositorio;
+        this.repositorio = Objects.requireNonNull(repositorio, "Repositorio requerido");
     }
 
     public Solicitud registrar(DatosRegistroSolicitud datos) {
@@ -95,9 +96,9 @@ public class GestorSolicitudes {
     private String determinarPrioridad(String tipo, String prioridad) {
         String prioridadFinal = prioridad;
         if (prioridadFinal == null || prioridadFinal.isBlank()) {
-            if (tipo.equalsIgnoreCase("CERTIFICADO")) {
+            if (tipo.trim().equalsIgnoreCase("CERTIFICADO")) {
                 prioridadFinal = "BAJA";
-            } else if (tipo.equalsIgnoreCase("RECLAMO")) {
+            } else if (tipo.trim().equalsIgnoreCase("RECLAMO")) {
                 prioridadFinal = "ALTA";
             } else {
                 prioridadFinal = "MEDIA";
