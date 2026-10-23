@@ -146,9 +146,7 @@ public class GestorSolicitudes {
             if (responsable == null) {
                 sb.append("Sin asignar");
             } else {
-                sb.append(responsable.getNombre()).append(" (")
-                        .append(responsable.getArea()).append(", ")
-                        .append(responsable.getEmail()).append(")");
+                sb.append(responsable.formatearParaReporte());
             }
             sb.append("\n");
         }

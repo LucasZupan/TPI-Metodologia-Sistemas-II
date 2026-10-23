@@ -17,4 +17,8 @@ public class Responsable {
     public String getNombre() { return nombre; }
     public String getArea() { return area; }
     public String getEmail() { return email; }
+
+    public String formatearParaReporte() {
+        return nombre + " (" + area + ", " + email + ")";
+    }
 }
